@@ -1,7 +1,6 @@
 import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 import TurndownService from "@oh-my-pi/pi-utils/turndown";
 import fs from "node:fs";
-
 // Playwright is loaded dynamically at runtime: it is an optional,
 // platform-specific dependency that is not installed in every omp
 // environment. Static import would fail to typecheck / build where the

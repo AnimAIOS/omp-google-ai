@@ -48,19 +48,6 @@ bun install --ignore-scripts
 bun test
 bun run check
 ```
-
-- `google-ai-search.ts` — extension entry point (source of truth; default factory exporting `registerTool("google_ai_search_plus", …)`)
-- `extensions/` — install locations for `~/.omp/agent/extensions/`; `extensions/google-ai-search.ts` is a synced copy kept byte-identical to the root file
-
-Playwright is loaded dynamically at runtime. The browser binary must be installed:
-
-```bash
-npx playwright install chromium
-```
-
-## Files
-
-- `google-ai-search.ts` — extension entry point
+- `google-ai-search.ts` — extension entry point (source of truth; default factory exporting `registerTool("google_ai_search_plus", …)`); `extensions/google-ai-search.ts` is its byte-identical copy for `~/.omp/agent/extensions/`
 - `package.json` — plugin manifest (peerDeps on `pi-coding-agent`, deps on `playwright` + `pi-utils`)
 - `tsconfig.json` — typecheck config
-- `extensions/google-ai-search.ts` — byte-identical copy for `~/.omp/agent/extensions/`

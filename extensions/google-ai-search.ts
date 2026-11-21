@@ -1,14 +1,13 @@
 import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 import TurndownService from "@oh-my-pi/pi-utils/turndown";
 import fs from "node:fs";
-
 // Playwright is loaded dynamically at runtime: it is an optional,
 // platform-specific dependency that is not installed in every omp
 // environment. Static import would fail to typecheck / build where the
 // package is absent.
 type PlaywrightModule = typeof import("playwright");
-type Browser = Awaited<ReturnType<PlaywrightModule["chromium"]["launch"]>>;
-type Page = Awaited<ReturnType<Browser["newPage"]>>;
+type BrowserContext = Awaited<ReturnType<PlaywrightModule["chromium"]["launchPersistentContext"]>>;
+type Page = Awaited<ReturnType<BrowserContext["newPage"]>>;
 
 type SourceReference = {
   title: string;
@@ -88,15 +87,11 @@ type SearchOutcome = {
 const DEFAULT_TIMEOUT = 30_000;
 const MAX_TIMEOUT = 120_000;
 const IDLE_TIMEOUT = 5 * 60 * 1000;
-
-// Reuse the local Chrome identity (binary, UA and cookies) so Google AI Mode
-// treats the automation browser as the same browser as the user's Chrome.
-const COOKIES_PATH =
-  process.env.GOOGLE_AI_COOKIES_PATH ??
-  "/home/vi/chrome-to-playwright-cookies/cookies.json";
-const UA_PATH =
-  process.env.GOOGLE_AI_UA_PATH ??
-  "/home/vi/chrome-to-playwright-cookies/chrome-ua.txt";
+// Launch the user's real Chrome profile so Google AI Mode sees the same
+// cookies, UA, and browser identity — Chrome decrypts cookies natively,
+// so there's no stale-cookie extraction step to break.
+const CHROME_USER_DATA_DIR =
+  process.env.GOOGLE_AI_USER_DATA_DIR ?? "/home/vi/.config/chromium-clang";
 const CHROME_PATH =
   process.env.GOOGLE_AI_CHROME_PATH ??
   "/opt/chromium.org/chromium-unstable/chrome";
@@ -196,7 +191,7 @@ export async function runSearch(
 }
 
 class GoogleAIModeManager {
-  private browser: Browser | null = null;
+  private browser: BrowserContext | null = null;
   private page: Page | null = null;
   private conversationActive = false;
   private sessionStartTime = Date.now();
@@ -255,28 +250,22 @@ class GoogleAIModeManager {
 
   private async ensureBrowserSession() {
     if (!this.browser) {
-      this.browser = await this.playwright.chromium.launch({
-        executablePath: fs.existsSync(CHROME_PATH) ? CHROME_PATH : undefined,
-        headless: true,
-        args: [
-          "--no-sandbox",
-          "--disable-dev-shm-usage",
-          "--disable-blink-features=AutomationControlled",
-          "--disable-features=VizDisplayCompositor",
-        ],
-      });
+      this.browser = await this.playwright.chromium.launchPersistentContext(
+        CHROME_USER_DATA_DIR,
+        {
+          executablePath: fs.existsSync(CHROME_PATH) ? CHROME_PATH : undefined,
+          headless: true,
+          args: [
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-blink-features=AutomationControlled",
+            "--disable-features=VizDisplayCompositor",
+          ],
+        },
+      );
     }
-
     if (!this.page) {
-      const userAgent = fs.existsSync(UA_PATH)
-        ? fs.readFileSync(UA_PATH, "utf8").trim()
-        : FALLBACK_UA;
-      this.page = await this.browser.newPage({ userAgent });
-
-      if (fs.existsSync(COOKIES_PATH)) {
-        const cookies = JSON.parse(fs.readFileSync(COOKIES_PATH, "utf8"));
-        await this.page.context().addCookies(cookies);
-      }
+      this.page = await this.browser!.newPage();
 
       await this.page.addInitScript(() => {
         Object.defineProperty(navigator, "webdriver", {
