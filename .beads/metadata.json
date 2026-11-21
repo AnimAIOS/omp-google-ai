@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "omp_google_ai",
+  "project_id": "b462b226-a759-4f5f-82eb-0d7c68e0bdb1"
+}
