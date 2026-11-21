@@ -1,0 +1,27 @@
+{
+	"name": "omp-google-ai-search",
+	"version": "1.0.0",
+	"description": "Google AI Mode search tool ported from github:Vecchete/Opencode-Google-AI-Search-Plugin for oh-my-pi (omp)",
+	"main": "google-ai-search.ts",
+	"type": "module",
+	"scripts": {
+		"test": "bun test",
+		"check": "bun check --no-script"
+	},
+	"devDependencies": {
+		"@oh-my-pi/pi-coding-agent": "19.1.0",
+		"@types/bun": "1.4.3"
+	},
+	"dependencies": {
+		"@oh-my-pi/pi-utils": "^19.1.0",
+		"playwright": "^1.65.1"
+	},
+	"peerDependencies": {
+		"@oh-my-pi/pi-coding-agent": "^19.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/AnimAIOS/omp-google-ai-search.git"
+	},
+	"license": "MIT"
+}
