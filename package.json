@@ -23,5 +23,8 @@
 		"type": "git",
 		"url": "git+https://github.com/AnimAIOS/omp-google-ai.git"
 	},
+	"omp": {
+		"extensions": ["google-ai-search.ts"]
+	},
 	"license": "MIT"
 }
