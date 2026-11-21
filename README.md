@@ -3,17 +3,16 @@
 Google AI Mode search tool ported from [`github:Vecchete/Opencode-Google-AI-Search-Plugin`](https://github.com/Vecchete/Opencode-Google-AI-Search-Plugin) into an [oh-my-pi (omp)](https://github.com/oh-my-pi/pi-ai) extension.
 
 Registers the `google_ai_search_plus` tool, which searches the web using Google's AI Mode via a shared Playwright browser session (cookie/UA identity carried over from local Chrome), with abort handling, idle disposal, and markdown output.
-
 ## Install
 
 ```bash
-omp plugin install github:AnimAIOS/omp-google-ai-search
+omp plugin install github:AnimAIOS/omp-google-ai
 ```
 
 Or load directly from a local path:
 
 ```bash
-omp --extension /path/to/omp-google-ai-search/google-ai-search.ts
+omp --extension /path/to/omp-google-ai/google-ai-search.ts
 ```
 
 ## Usage
